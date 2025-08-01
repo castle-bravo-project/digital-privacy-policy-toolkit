@@ -44,4 +44,6 @@ const Settings: React.FC = () => {
     );
 };
 
+// Trigger redeploy: trivial change for GitHub Actions
+
 export default Settings;
