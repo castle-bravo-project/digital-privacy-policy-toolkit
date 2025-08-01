@@ -1,4 +1,3 @@
-
 export const exampleReportHtml = `
 <!DOCTYPE html>
 <html lang="en">
@@ -6,6 +5,7 @@ export const exampleReportHtml = `
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Privacy Policy Analysis: Technical and Constitutional Considerations</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -638,82 +638,64 @@ function create_backdoor(encryption_system) {
         </div>
     </div>
     <script>
+    function svgToPngDataUrl(svgString, width, height, callback) {
+        var svg = new Blob([svgString], { type: 'image/svg+xml' });
+        var url = URL.createObjectURL(svg);
+        var img = new window.Image();
+        img.onload = function () {
+            var canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            callback(canvas.toDataURL('image/png'));
+            URL.revokeObjectURL(url);
+        };
+        img.src = url;
+    }
     async function downloadPdf() {
         const button = document.getElementById('pdf-download-btn');
         if (button.disabled) return;
-        
         button.innerText = 'Exporting...';
         button.disabled = true;
-
-        const html2pdf = window.top.html2pdf;
-
+        const html2pdf = window.html2pdf;
         if (typeof html2pdf === 'undefined') {
             alert('PDF generation library is not available. It might have been blocked from loading. Please check your network connection or ad-blocker and refresh the page.');
             button.innerText = 'Download PDF';
             button.disabled = false;
             return;
         }
-
         const element = document.querySelector('.container');
         const opt = {
-            margin:       [0.5, 0.5, 0.5, 0.5],
+            margin:       [0.1, 0.1, 0.1, 0.1], // smaller margins
             filename:     'Policy-Report-Sample.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#f8f9fa' },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
-
-        const logoSvgString = \`
-            <svg width="400" height="100" viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="pdfFooterLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#ef4444" />
-                        <stop offset="50%" style="stop-color:#f97316" />
-                        <stop offset="100%" style="stop-color:#eab308" />
-                    </linearGradient>
-                </defs>
-                <path d="M50 15 L70 25 L70 55 L50 75 L30 55 L30 25 Z" fill="none" stroke="url(#pdfFooterLogoGrad)" stroke-width="2"/>
-                <circle cx="50" cy="45" r="3" fill="#f97316"/>
-                <ellipse cx="50" cy="45" rx="15" ry="6" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/>
-                <ellipse cx="50" cy="45" rx="15" ry="6" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7" transform="rotate(60 50 45)"/>
-                <ellipse cx="50" cy="45" rx="15" ry="6" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7" transform="rotate(-60 50 45)"/>
-                <circle cx="65" cy="45" r="1.5" fill="#eab308" /><circle cx="42" cy="38" r="1.5" fill="#eab308" /><circle cx="58" cy="52" r="1.5" fill="#eab308" />
-                <text x="35" y="22" font-family="monospace" font-size="6" fill="#60a5fa" opacity="0.6">&lt;/&gt;</text>
-                <text x="58" y="22" font-family="monospace" font-size="6" fill="#60a5fa" opacity="0.6">{}</text>
-                <text x="95" y="35" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ef4444">Castle Bravo Project</text>
-                <text x="95" y="55" font-family="Arial, sans-serif" font-size="12" fill="#f97316">Open Code. Open Defense. Open Future.</text>
-            </svg>
-        \`;
-        const logoBase64 = \`data:image/svg+xml;base64,\${window.top.btoa(unescape(encodeURIComponent(logoSvgString)))}\`;
-
-        try {
-            const worker = html2pdf().from(element).set(opt);
-
-            await worker.toPdf().get('pdf').then(function (pdf) {
+        var logoSvgString = '<svg width="400" height="100" viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pdfFooterLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#ef4444" /><stop offset="50%" style="stop-color:#f97316" /><stop offset="100%" style="stop-color:#eab308" /></linearGradient></defs><path d="M50 15 L70 25 L70 55 L50 75 L30 55 L30 25 Z" fill="none" stroke="url(#pdfFooterLogoGrad)" stroke-width="2"/><circle cx="50" cy="45" r="3" fill="#f97316"/><ellipse cx="50" cy="45" rx="15" ry="6" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/><ellipse cx="50" cy="45" rx="15" ry="6" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7" transform="rotate(60 50 45)"/><ellipse cx="50" cy="45" rx="15" ry="6" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7" transform="rotate(-60 50 45)"/><circle cx="65" cy="45" r="1.5" fill="#eab308" /><circle cx="42" cy="38" r="1.5" fill="#eab308" /><circle cx="58" cy="52" r="1.5" fill="#eab308" /><text x="35" y="22" font-family="monospace" font-size="6" fill="#60a5fa" opacity="0.6">&lt;/&gt;</text><text x="58" y="22" font-family="monospace" font-size="6" fill="#60a5fa" opacity="0.6">{}</text><text x="95" y="35" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ef4444">Castle Bravo Project</text><text x="95" y="55" font-family="Arial, sans-serif" font-size="12" fill="#f97316">Open Code. Open Defense. Open Future.</text></svg>';
+        svgToPngDataUrl(logoSvgString, 400, 100, function(logoPngDataUrl) {
+            html2pdf().from(element).set(opt).toPdf().get('pdf').then(function (pdf) {
                 const totalPages = pdf.internal.getNumberOfPages();
                 const pageHeight = pdf.internal.pageSize.getHeight();
-                
                 for (let i = 1; i <= totalPages; i++) {
                     pdf.setPage(i);
                     const footerY = pageHeight - opt.margin[2] + 0.15;
                     const logoHeight = 0.25;
                     const logoWidth = logoHeight * 4;
                     const logoX = opt.margin[3];
-                    pdf.addImage(logoBase64, 'SVG', logoX, footerY, logoWidth, logoHeight);
+                    pdf.addImage(logoPngDataUrl, 'PNG', logoX, footerY, logoWidth, logoHeight);
                     const textX = logoX + logoWidth + 0.1;
                     const textY = footerY + (logoHeight / 2);
                     pdf.setFontSize(7);
-                    pdf.setTextColor('#64748b'); // slate-500
+                    pdf.setTextColor('#64748b');
                     pdf.text("Analysis powered by Google Gemini - via Castle Bravo Digital Privacy Policy Toolkit", textX, textY, { align: 'left', baseline: 'middle' });
                 }
             }).save();
-        } catch(e) {
-            alert('An error occurred during PDF generation.');
-            console.error(e);
-        } finally {
             button.innerText = 'Download PDF';
             button.disabled = false;
-        }
+        });
     }
     </script>
 </body>
